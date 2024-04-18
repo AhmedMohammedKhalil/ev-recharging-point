@@ -843,17 +843,36 @@ a:focus {
 .info_section .info_form button {
   display: inline-block;
   padding: 10px 45px;
-  background-color: #6bb7be;
+  background-color: #000000;
   color: #ffffff;
   border-radius: 0px;
-  border: 1px solid #6bb7be;
+  border: 1px solid #000000;
   -webkit-transition: all .2s;
   transition: all .2s;
 }
 
 .info_section .info_form button:hover {
   background-color: transparent;
-  color: #6bb7be;
+  color: #000000;
+}
+
+
+.custom_btn {
+  display: block;
+  margin: auto;
+  width: fit-content;
+  padding: 10px 45px;
+  background-color: #000000;
+  color: #ffffff;
+  border-radius: 0px;
+  border: 1px solid #000000;
+  -webkit-transition: all .2s;
+  transition: all .2s;
+}
+
+.custom_btn:hover {
+  background-color: transparent;
+  color: #000000;
 }
 
 .info_section .info_form .social_box {

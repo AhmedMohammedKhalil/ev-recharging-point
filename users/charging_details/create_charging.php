@@ -22,7 +22,7 @@
                 Create Charging
               </h2>
             </div>
-            <form action="<?php echo $cont."UserController.php?method=createCharging"?>" method="POST" class="form">
+            <form action="<?php echo $cont."ChargingController.php?method=createCharging"?>" method="POST" class="form">
               <?php
                 if(isset($_SESSION['errors'])) {
                   echo '<ol style="width:fit-content;margin: 0 auto">';

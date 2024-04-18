@@ -1,40 +1,43 @@
 <?php 
-session_start();
+if (session_id() === "") {session_start();}
 
-include_once('../layout/functions/functions.php');
-$method = $_GET['method'];
-if($method != "") {
-    $Charging = new ChargingController();
-
-    if($method == 'showChargingDetails') {
-        $Charging->showChargingDetails();
-    }
+if(isset($_GET['method'])) {
+    include_once('../layout/functions/functions.php');
+    $method = $_GET['method'];
+    if($method != "") {
+        $Charging = new ChargingController();
     
-    if($method == 'createCharging') {
-        $Charging->createCharging();
+        if($method == 'showChargingDetails') {
+            $Charging->showChargingDetails();
+        }
+        
+        if($method == 'createCharging') {
+            $Charging->createCharging();
+        }
+    
+        if($method == 'cancelCharging') {
+            $Charging->cancelCharging();
+        }
+    
+        if($method == 'startCharging') {
+            $Charging->startCharging();
+        }
+    
+        if($method == 'loadingCharging') {
+            $Charging->loadingCharging();
+        }
+    
+        if($method == 'finishCharging') {
+            $Charging->finishCharging();
+        }
+    
     }
-
-    if($method == 'cancelCharging') {
-        $Charging->cancelCharging();
-    }
-
-    if($method == 'startCharging') {
-        $Charging->startCharging();
-    }
-
-    if($method == 'loadingCharging') {
-        $Charging->loadingCharging();
-    }
-
-    if($method == 'finishCharging') {
-        $Charging->finishCharging();
-    }
-
 }
+
 
 class ChargingController {
     private $Path = "../users/charging_details/";
-    private $user,$car_power_m,$bike_power_m,$scooter_power_m;
+    private $user;
 
     private $powerLevels = [
         'car' => 7,         // Power level for car (7 kW)
@@ -57,7 +60,6 @@ class ChargingController {
 
     public function calculateKWPerMinute($powerLevel, $chargeDuration) {
         $chargeDurationInMinutes = $chargeDuration * 60;
-        // Calculate kW per minute
         $kWPerMinute = $powerLevel / $chargeDurationInMinutes;
         return $kWPerMinute;
     }
@@ -69,13 +71,38 @@ class ChargingController {
             $chargeDuration = $this->chargeDurations[$vehicleType];
             $kWPerMinute = $this->calculateKWPerMinute($powerLevel, $chargeDuration);
             if($vehicleType == 'car') {
-                $this->car_power_m = $kWPerMinute;
+                $_SESSION['power']['car'] = $kWPerMinute;
             } elseif($vehicleType == 'e-bike') {
-                $this->bike_power_m = $kWPerMinute;
+                $_SESSION['power']['e-bike'] = $kWPerMinute;
             } else {
-                $this->scooter_power_m = $kWPerMinute;
+                $_SESSION['power']['e-scooter'] = $kWPerMinute;
             }
         }
+    }
+
+
+    public static function calculateRemainingTime() {
+
+        $startTime = strtotime($_SESSION['charging_details']['time_start']);
+        $endTime = strtotime($_SESSION['charging_details']['time_end']);
+        $currentTime = time();
+        $remainingTime = $endTime - $currentTime;
+        $chargingTime = $currentTime - $startTime;
+        $_SESSION['charging_details']['time_charging'] = $chargingTime;
+        $_SESSION['charging_details']['time_up'] = gmdate("H:i:s",$remainingTime);
+    }
+    
+    public static function calculateCurrentPower() {
+        if($_SESSION['charging_details']['vehicle_type'] == 'car') {
+            $power = $_SESSION['power']['car'];
+        } elseif($_SESSION['charging_details']['vehicle_type'] == 'e-bike') {
+            $power =  $_SESSION['power']['e-bike'];
+        } else {
+            $power =  $_SESSION['power']['e-scooter'];
+        }
+        $currentPower = $power * ($_SESSION['charging_details']['time_charging'] / 60);
+        
+        $_SESSION['charging_details']['power_up'] = round($currentPower + $_SESSION['charging_details']['power_init'],2);
     }
 
 
@@ -93,6 +120,9 @@ class ChargingController {
             } elseif($charging_details['status'] == 'canceling') {
                 $this->showCancelingDetails();
                 exit();
+            } else {
+                $this->showFinishingDetails();
+                exit();
             }
         } else {
             $this->showCreateCharging();
@@ -103,23 +133,34 @@ class ChargingController {
     
 
     public function createCharging() {
-       
+        // add all details after validation
+        //then redirect to showChargingDetails function
     }
 
     public function startCharging() {
-       
+        // start charge after update details
+        //then redirect to showChargingDetails function
+
     }
 
     public function finishCharging() {
-       
+        // close charge 
+        //then redirect to showChargingDetails function
+
     }
 
     public function cancelCharging() {
-       
+        //cancel charge with validation pin and update details
+        //then redirect to showChargingDetails function
+
     }
 
-    public function loadingCharging() {
-       
+    public static function loadingCharging() {
+        ChargingController::calculateRemainingTime();
+        ChargingController::calculateCurrentPower();
+        
+        //check if finish charge and update charge
+
     }
 
     public function showCreateCharging() {
@@ -132,6 +173,7 @@ class ChargingController {
     }
 
     public function showLoadingDetails() {
+        $this->loadingCharging();
         header('location: '.$this->Path."loading_details.php");
     }
 
@@ -142,7 +184,6 @@ class ChargingController {
     public function showFinishingDetails() {
         header('location: '.$this->Path."finishing_details.php");
     }
-
 
 
 }
