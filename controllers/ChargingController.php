@@ -36,7 +36,6 @@ class ChargingController {
     private $Path = "../users/charging_details/";
     private $user,$car_power_m,$bike_power_m,$scooter_power_m;
 
-
     private $powerLevels = [
         'car' => 7,         // Power level for car (7 kW)
         'e-bike' => 0.9,    // Power level for e-bike (0.9 kW)
