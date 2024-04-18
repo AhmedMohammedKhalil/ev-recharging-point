@@ -9,6 +9,9 @@
     ChargingController::loadingCharging();
     $vehicle_type = strtoupper($_SESSION['charging_details']['vehicle_type']); 
     $payment_type = strtoupper(str_replace('-',' ',$_SESSION['charging_details']['payment_type'])); 
+    if(isset($_SESSION['errors'])) {
+      $errors = $_SESSION['errors'];
+    }
 ?>
 
 <section class="blog_section layout_padding">
