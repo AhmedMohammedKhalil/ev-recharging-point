@@ -83,5 +83,6 @@
 <?php
 	include $tmp . 'footer.php'; 
 	ob_end_flush();
-
+  unset($_SESSION['oldData']);
+  unset($_SESSION['errors']);
 ?>
