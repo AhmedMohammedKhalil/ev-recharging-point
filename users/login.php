@@ -10,39 +10,54 @@
     extract($oldData);
   }
 ?>
-	<div class="section" id="login" style="margin-bottom: 33px;">
-      <div class="container">
-        <h2 class="special-heading">User Login</h2>
-        <form action="<?php echo $cont."UserController.php?method=login"?>" method="POST" class="form">
-          <?php
-            if(isset($_SESSION['errors'])) {
-              echo '<ol style="width:fit-content;margin: 0 auto">';
-              foreach($errors as $e) {
-                echo '<li style="color: red">'.$e.'</li>';
-              }
-              echo '</ol>';
-            }
-          ?>
-          <div style="display: flex;justify-content:center;flex-direction:column">
-            <div>
-              <label for="email">Email</label>
-              <input type="email" name="email" id="email" title="Enter Email" placeholder="Enter Email" required
-                value="<?php if(isset($_SESSION['errors'])) echo $email?>">
+
+
+
+<section class="contact_section long_section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form_container">
+            <div class="heading_container">
+              <h2>
+                User LogIn
+              </h2>
             </div>
-            <div>
-                <label for="password">Password</label>
-                <input type="password" name="password" id="password" title="Enter Password" placeholder="Enter Password" required>
-            </div>
-            <div>
-                <span>if don't have account <a href="<?php echo $cont.'UserController.php?method=showRegister'?>">Make Register</a></span>
-            </div>
-            <div>
-              <input type="submit" name="user_login" value="Login">
-            </div>
+            <form action="<?php echo $cont."UserController.php?method=login"?>" method="POST" class="form">
+              <?php
+                if(isset($_SESSION['errors'])) {
+                  echo '<ol style="width:fit-content;margin: 0 auto">';
+                  foreach($errors as $e) {
+                    echo '<li style="color: red">'.$e.'</li>';
+                  }
+                  echo '</ol>';
+                }
+              ?>
+              <div>
+                <label for="account_number">Account Number</label>
+                <input type="account_number" name="account_number" id="account_number" title="Enter Account Number with 10 digits" placeholder="Enter Account Number with 10 digits" required
+                  value="<?php if(isset($_SESSION['errors'])) echo $account_number?>">
+              </div>
+              <div>
+                  <label for="pin">Pin</label>
+                  <input type="pin" name="pin" id="pin" title="Enter pin with 6 digits" placeholder="Enter pin with 6 digits" required>
+              </div>
+              <div>
+                  <span>if don't have account <a href="<?php echo $cont.'UserController.php?method=showRegister'?>">Make Register</a></span>
+              </div>
+              <div class="btn_box">
+                <button type="submit" name="user_login">
+                  Login
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
+        </div>
       </div>
     </div>
+</section>
+
+	
 <?php
 	include $tmp . 'footer.php';
 	ob_end_flush();

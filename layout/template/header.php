@@ -26,21 +26,21 @@
 	<body>
 
 
-    <div class="hero_area">
+    <div class="hero_area" <?php if(!isset($slider)) { echo "style='min-height:unset'"; } ?>>
       <!-- header section strats -->
       <header class="header_section long_section px-0">
         <nav class="navbar navbar-expand-lg custom_nav-container ">
           <a class="navbar-brand" href="<?php echo $app?>index.php">
             <span>
-              EV Charging Point
+              EV RECharging Point
             </span>
           </a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class=""> </span>
           </button>
 
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <div class="d-flex mx-auto flex-column flex-lg-row align-items-center">
+          <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <div class="d-flex flex-column flex-lg-row align-items-center">
               <ul class="navbar-nav  ">
                 
                 <li class="nav-item active">
@@ -56,11 +56,15 @@
                   </li>
                 <?php } else {?>
                   <li class="nav-item">
-                    <a class="nav-link" href="<?php echo $cont.'UserController.php?method=showLogin'?>">profile</a>
+                    <a class="nav-link" href="<?php echo $cont.'UserController.php?method=showProfile'?>">Profile</a>
                   </li>
 
                   <li class="nav-item">
-                    <a class="nav-link" href="<?php echo $cont.'UserController.php?method=showLogin'?>">Charging Details</a>
+                    <a class="nav-link" href="<?php echo $cont.'ChargingController.php?method=showChargingDetails'?>">Charging Details</a>
+                  </li>
+
+                  <li class="nav-item">
+                    <a class="nav-link" href="<?php echo $cont.'UserController.php?method=logout'?>">Logout</a>
                   </li>
 
                 <?php }?>
@@ -71,6 +75,7 @@
       </header>
       <!-- end header section -->
       <!-- slider section -->
+      <?php if(isset($slider) && $slider == true): ?>
       <section class="slider_section long_section">
         <div id="customCarousel" class="carousel slide" data-ride="carousel">
           <div class="carousel-inner">
@@ -80,25 +85,16 @@
                   <div class="col-md-5">
                     <div class="detail-box">
                       <h1>
-                        For All Your <br>
-                        Furniture Needs
+                        Efficient and Eco-Friendly Charging Solutions for Electric Cars
                       </h1>
-                      <p>
-                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minus quidem maiores perspiciatis, illo maxime voluptatem a itaque suscipit.
+                      <p style="text-align:justify">
+                      Our recharging point for electric cars offers high-speed charging capabilities, allowing electric vehicle (EV) owners to quickly recharge their cars while on the go. With convenient access and reliable service, drivers can enjoy extended journeys with minimal downtime, contributing to a sustainable future.
                       </p>
-                      <div class="btn-box">
-                        <a href="" class="btn1">
-                          Contact Us
-                        </a>
-                        <a href="" class="btn2">
-                          About Us
-                        </a>
-                      </div>
                     </div>
                   </div>
                   <div class="col-md-7">
                     <div class="img-box">
-                      <img src="images/slider-img.png" alt="">
+                      <img style="height: 500px;" src="<?php echo $imgs ?>cover1.jpg" alt="">
                     </div>
                   </div>
                 </div>
@@ -110,25 +106,17 @@
                   <div class="col-md-5">
                     <div class="detail-box">
                       <h1>
-                        For All Your <br>
-                        Furniture Needs
+                      Convenient Charging Stations for Electric Bicycles
                       </h1>
-                      <p>
-                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minus quidem maiores perspiciatis, illo maxime voluptatem a itaque suscipit.
+                      <p style="text-align:justify">
+                      Our recharging point for e-bikes provides a convenient solution for urban commuters and recreational riders. Offering rapid charging options and strategically located in key areas, cyclists can easily top up their e-bike batteries, ensuring a seamless riding experience throughout the city.
                       </p>
-                      <div class="btn-box">
-                        <a href="" class="btn1">
-                          Contact Us
-                        </a>
-                        <a href="" class="btn2">
-                          About Us
-                        </a>
-                      </div>
+                      
                     </div>
                   </div>
                   <div class="col-md-7">
                     <div class="img-box">
-                      <img src="images/slider-img.png" alt="">
+                    <img style="height: 500px;" src="<?php echo $imgs ?>cover2.jpg" alt="">
                     </div>
                   </div>
                 </div>
@@ -140,25 +128,17 @@
                   <div class="col-md-5">
                     <div class="detail-box">
                       <h1>
-                        For All Your <br>
-                        Furniture Needs
+                          Fast and Flexible Charging Hubs for Electric Scooters
                       </h1>
-                      <p>
-                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Minus quidem maiores perspiciatis, illo maxime voluptatem a itaque suscipit.
+                      <p style="text-align:justify">
+                      Our recharging point for e-scooters offers fast and flexible charging solutions for urban mobility. With compact design and multiple charging ports, riders can quickly recharge their e-scooters while running errands or exploring the city, promoting sustainable transportation options.                      
                       </p>
-                      <div class="btn-box">
-                        <a href="" class="btn1">
-                          Contact Us
-                        </a>
-                        <a href="" class="btn2">
-                          About Us
-                        </a>
-                      </div>
+                      
                     </div>
                   </div>
                   <div class="col-md-7">
                     <div class="img-box">
-                      <img src="images/slider-img.png" alt="">
+                    <img style="height: 500px;" src="<?php echo $imgs ?>cover3.jpg" alt="">
                     </div>
                   </div>
                 </div>
@@ -172,5 +152,22 @@
           </ol>
         </div>
       </section>
+      <?php else: ?>
+        <section class="slider_section header-image">
+          <div class="slider_section" style="background-color: rgb(153 153 153 / 67%);height: 500px;">
+          <div class="container ">
+                <div class="row">
+                  <div class="col-12">
+                    <div class="detail-box">
+                      <h1 class="text-center">
+                          <?php echo $pageTitle?>
+                      </h1>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </section>
+      <?php endif ?>
       <!-- end slider section -->
     </div>

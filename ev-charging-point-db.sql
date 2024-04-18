@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 18, 2024 at 03:08 AM
+-- Generation Time: Apr 18, 2024 at 08:01 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -34,10 +34,14 @@ CREATE TABLE `charging_details` (
   `power_init` decimal(5,2) NOT NULL,
   `power_level` decimal(5,2) NOT NULL,
   `charging_bay` int(11) NOT NULL,
-  `charge_duration` int(11) NOT NULL,
+  `charge_duration` varchar(10) NOT NULL,
   `payment_type` enum('on-account','contactless-card-interaction') DEFAULT NULL,
   `open` enum('open','close') NOT NULL DEFAULT 'open',
-  `status` enum('wait-payment','wait-starting','wait-ending','canceling','finishing') DEFAULT 'wait-payment'
+  `status` enum('wait-starting','wait-ending','canceling','finishing') DEFAULT 'wait-starting',
+  `time_start` time DEFAULT NULL,
+  `time_up` time DEFAULT NULL,
+  `time_end` time DEFAULT NULL,
+  `power_up` decimal(5,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -54,6 +58,13 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `account_number`, `name`, `pin`) VALUES
+(1, '9632587412', 'ahmed', '963258');
+
+--
 -- Indexes for dumped tables
 --
 
@@ -68,7 +79,8 @@ ALTER TABLE `charging_details`
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `account_number` (`account_number`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -84,7 +96,7 @@ ALTER TABLE `charging_details`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Constraints for dumped tables

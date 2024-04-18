@@ -5,31 +5,31 @@
 	include 'init.php';
   include $tmp.'header.php';
 ?>
-    <?php if(isset($_SESSION['msg'])) { ?>
-        <p style="color:black;background:#8bfa8b;padding:20px;margin:0">
-            <?php 
-                echo $_SESSION['msg'] ;
-                unset($_SESSION['msg']);
-            ?>
-        </p>
-    <?php } ?>
-    <div class="section" id="User-profile">
-      <div class="container">
-        <h2 class="special-heading">User Profile</h2>
-        <div class="kids-info flex">
-          <h3>Name : <?php echo $_SESSION['user']['name'] ?></h3>
-          <h3>Email : <?php echo $_SESSION['user']['email'] ?></h3>
-          <h3>Email : <?php echo $_SESSION['user']['phone'] ?></h3>
-          <h3>Email : <?php echo $_SESSION['user']['phone'] ?></h3>
-          
-          <div class="flex" style="flex-direction: row;">
-            <a class="button" href="<?php echo $cont.'UserController.php?method=showSettings' ?>" 
-            style="margin: 10px;">Settings</a>
 
+<section class="blog_section layout_padding">
+    <div class="container">
+      <div class="heading_container">
+        <h2>
+          User Profile
+        </h2>
+      </div>
+      <div class="row">
+        <div class="col-md-6 col-lg-4 mx-auto">
+          <div class="box">
+            <div class="img-box">
+              <img src="<?php echo $imgs ?>user.jpg" alt="">
+            </div>
+            <div class="detail-box">
+              <h5>Name : <?php echo $_SESSION['user']['name'] ?></h5>
+              <h5>Account Number : <?php echo $_SESSION['user']['account_number'] ?></h5>
+              <h5>Pin : <?php echo $_SESSION['user']['pin'] ?></h5>
+            </div>
           </div>
         </div>
       </div>
-  </div>
+    </div>
+  </section>
+
 <?php
 	include $tmp . 'footer.php'; 
 	ob_end_flush();
