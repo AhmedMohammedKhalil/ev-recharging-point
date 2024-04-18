@@ -183,7 +183,7 @@ class ChargingController {
                 } if (empty($errors)) {
                     $chargingpower = ($charge_duration * 60 * $_SESSION['power'][$vehicle_type]) + $power_init;
                     if($chargingpower > $this->powerLevels[$vehicle_type]) {
-                        array_push($error,"car power or charging Duration are Invalid that total power more than".$this->powerLevels[$vehicle_type]);
+                        array_push($error,"car power or charging Duration are Invalid that total power greater than".$this->powerLevels[$vehicle_type]);
                     }
                 }
 
@@ -193,7 +193,7 @@ class ChargingController {
                 if(!empty($error))
                 {
                     $_SESSION['errors'] = $error;
-                    header('location: '.$this->Path.'create_details.php');
+                    header('location: '.$this->Path.'create_charginig.php');
                     exit();
                 }
                 $inserted = array_values($data);
@@ -243,16 +243,48 @@ class ChargingController {
 
     public function cancelCharging() {
 
-        $data = [
-            'status' => 'canceling',
-            'power_up' => $_SESSION['charging_details']['power_up'],
-            'time_up' => $_SESSION['charging_details']['time_up'],
-            'id' => $_SESSION['charging_details']['id'],
-        ];
-        $success = update('status = ? , power_up = ? , time_up = ?','charging_details',array_values($data),'id = ?');
-        if($success) {
-            $this->showChargingDetails();  
+
+        $error=[];
+        if($_SERVER['REQUEST_METHOD'] == 'POST') { 
+            if(isset($_POST['cancel_charging'])) {
+
+
+                $pin = trim($_POST['pin']);
+                if (empty($pin)) {
+                    array_push($error,"pin requires");
+                } 
+                if (strlen($pin) != 6) {
+                    array_push($error,"pin must be 6 digit");
+                }
+                
+                if (!is_numeric($pin)) {
+                    array_push($error,"pin must be numbers only");
+                }
+
+                if($this->user['pin'] != $pin) {
+                    array_push($error,"This Pin is invalid");
+                }
+
+                if(!empty($error))
+                {
+                    $_SESSION['errors'] = $error;
+                    header('location: '.$this->Path.'loading_details.php');
+                    exit();
+                }
+
+                $data = [
+                    'status' => 'canceling',
+                    'power_up' => $_SESSION['charging_details']['power_up'],
+                    'time_up' => $_SESSION['charging_details']['time_up'],
+                    'id' => $_SESSION['charging_details']['id'],
+                ];
+                $success = update('status = ? , power_up = ? , time_up = ?','charging_details',array_values($data),'id = ?');
+                if($success) {
+                    $this->showChargingDetails();  
+                }
+            }
         }
+        
         
 
     }
