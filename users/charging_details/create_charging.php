@@ -60,7 +60,7 @@
               </div>
               <div>
                 <label for="charge_duration">Charge Duration</label>
-                <input type="text" name="charge_duration" id="charge_duration" title="Enter Charge Duration by H:M" placeholder="Enter Charge Duration by H:M" required
+                <input type="text" name="charge_duration" id="charge_duration" title="Enter Charge Duration by Hours ex: 15m = 0.25" placeholder="Enter Charge Duration by Hours ex: 15m = 0.25" required
                   value="<?php if(isset($_SESSION['errors'])) echo $charge_duration?>">
               </div>
 
