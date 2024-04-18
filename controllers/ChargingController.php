@@ -34,11 +34,49 @@ if($method != "") {
 
 class ChargingController {
     private $Path = "../users/charging_details/";
-    private $user;
+    private $user,$car_power_m,$bike_power_m,$scooter_power_m;
+
+
+    private $powerLevels = [
+        'car' => 7,         // Power level for car (7 kW)
+        'e-bike' => 0.9,    // Power level for e-bike (0.9 kW)
+        'e-scooter' => 0.25 // Power level for e-scooter (0.25 kW)
+    ];
+    
+    // Define charge durations for each vehicle type in hours
+    private $chargeDurations = [
+        'car' => 8,         // Charge duration for car (8 hours)
+        'e-bike' => 2,      // Charge duration for e-bike (2 hours)
+        'e-scooter' => 1    // Charge duration for e-scooter (1 hour)
+    ];
         
 
     public function __construct() {
        $this->user = $_SESSION['user'];
+       $this->calculatePower();
+    }
+
+    public function calculateKWPerMinute($powerLevel, $chargeDuration) {
+        $chargeDurationInMinutes = $chargeDuration * 60;
+        // Calculate kW per minute
+        $kWPerMinute = $powerLevel / $chargeDurationInMinutes;
+        return $kWPerMinute;
+    }
+
+
+    public function calculatePower() {
+
+        foreach ($this->powerLevels as $vehicleType => $powerLevel) {
+            $chargeDuration = $this->chargeDurations[$vehicleType];
+            $kWPerMinute = $this->calculateKWPerMinute($powerLevel, $chargeDuration);
+            if($vehicleType == 'car') {
+                $this->car_power_m = $kWPerMinute;
+            } elseif($vehicleType == 'e-bike') {
+                $this->bike_power_m = $kWPerMinute;
+            } else {
+                $this->scooter_power_m = $kWPerMinute;
+            }
+        }
     }
 
 
