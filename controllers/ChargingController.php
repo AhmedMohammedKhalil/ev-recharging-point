@@ -1,6 +1,5 @@
 <?php 
 if (session_id() === "") {session_start();}
-
 if(isset($_GET['method'])) {
     include_once('../layout/functions/functions.php');
     $method = $_GET['method'];
@@ -36,6 +35,7 @@ if(isset($_GET['method'])) {
 
 
 class ChargingController {
+    
     private $Path = "../users/charging_details/";
     private $user;
 
@@ -82,10 +82,10 @@ class ChargingController {
 
 
     public static function calculateRemainingTime() {
-
+        unset( $_SESSION['charging_details']['time_charging'], $_SESSION['charging_details']['time_up']);
         $startTime = strtotime($_SESSION['charging_details']['time_start']);
         $endTime = strtotime($_SESSION['charging_details']['time_end']);
-        $currentTime = time();
+        $currentTime = strtotime('now');
         $remainingTime = $endTime - $currentTime;
         $chargingTime = $currentTime - $startTime;
         $_SESSION['charging_details']['time_charging'] = $chargingTime;
@@ -93,6 +93,7 @@ class ChargingController {
     }
     
     public static function calculateCurrentPower() {
+        unset( $_SESSION['charging_details']['power_up']);
         if($_SESSION['charging_details']['vehicle_type'] == 'car') {
             $power = $_SESSION['power']['car'];
         } elseif($_SESSION['charging_details']['vehicle_type'] == 'e-bike') {
@@ -107,9 +108,11 @@ class ChargingController {
 
 
     public function showChargingDetails() {
+        unset($_SESSION['charging_details']);
         $where = "user_id = {$this->user['id']} And open ='open'";
         $charging_details = selectOne('*','charging_details',$where);
         if(!empty($charging_details)) {
+            
             $_SESSION['charging_details'] = $charging_details;
             if($charging_details['status'] == 'wait-starting') {
                 $this->showStartingDetails();
@@ -133,32 +136,149 @@ class ChargingController {
     
 
     public function createCharging() {
-        // add all details after validation
-        //then redirect to showChargingDetails function
+        unset($_SESSION['charging_details']);
+        $error=[];
+        if($_SERVER['REQUEST_METHOD'] == 'POST') { 
+            if(isset($_POST['create_charging'])) {
+                $power_init=trim($_POST['power_init']);
+                $vehicle_type = trim($_POST['vehicle_type']);
+                $charging_bay = trim($_POST['charging_bay']);
+                $charge_duration = trim($_POST['charge_duration']);
+                $power_level = $this->powerLevels[$vehicle_type];
+                $payment_type = trim($_POST['payment_type']);
+                $user_id = $this->user['id'];
+
+                $data = [
+
+                    'power_init'  => $power_init,
+                    'vehicle_type'  =>  $vehicle_type,
+                    'charging_bay' =>  $charging_bay,
+                    'charge_duration' => $charge_duration,
+                    'power_level' => $power_level,
+                    'payment_type' =>  $payment_type,
+                    'open' =>  'open',
+                    'status' => 'wait-starting',
+                    'user_id' => $user_id,
+                ];
+
+                $_SESSION['oldData'] = $data;
+                $error=[];
+
+                if (empty($power_init)) {
+                    array_push($error,"car power required");
+                } if (empty($vehicle_type)) {
+                    array_push($error,"vehicle type required");
+                } if (empty($charging_bay)) {
+                    array_push($error,"charging bay required");
+                } if (empty($payment_type)) {
+                    array_push($error,"payment type required");
+                } if (empty($charge_duration)) {
+                    array_push($error,"charge duration required");
+                } if (!is_numeric($charge_duration)) {
+                    array_push($error,"charge duration must be number");
+                } if ($power_init > $this->powerLevels[$vehicle_type]) {
+                    array_push($error,"Car power must be less than ".$this->powerLevels[$vehicle_type]);
+                } if ($charge_duration > $this->chargeDurations[$vehicle_type]) {
+                    array_push($error,"charge duration must be less than ".$this->chargeDurations[$vehicle_type]);
+                } if (empty($errors)) {
+                    $chargingpower = ($charge_duration * 60 * $_SESSION['power'][$vehicle_type]) + $power_init;
+                    if($chargingpower > $this->powerLevels[$vehicle_type]) {
+                        array_push($error,"car power or charging Duration are Invalid that total power more than".$this->powerLevels[$vehicle_type]);
+                    }
+                }
+
+
+                
+
+                if(!empty($error))
+                {
+                    $_SESSION['errors'] = $error;
+                    header('location: '.$this->Path.'create_details.php');
+                    exit();
+                }
+                $inserted = array_values($data);
+                $keys = join(',',array_keys($data));
+                $id = insert($keys,'charging_details','?,?,?,?,?,?,?,?,?',$inserted);
+                if(!empty($id)) {
+                    $this->showChargingDetails();  
+                }
+            }
+        }
     }
 
     public function startCharging() {
-        // start charge after update details
-        //then redirect to showChargingDetails function
+
+        $now = date("H:i:s",strtotime('now'));
+        $charge = ($_SESSION['charging_details']['charge_duration'] * 60);
+        $end_time = date('H:i:s', strtotime("now +". $charge ." Minutes"));
+        $data = [
+            'time_start' => $now,
+            'time_end' => $end_time,
+            'status' => 'wait-ending',
+            'id' => $_SESSION['charging_details']['id'],
+        ];
+
+        $success = update('time_start = ? , time_end = ? , status = ?','charging_details',array_values($data),'id = ?');
+        if($success) {
+            $this->showChargingDetails();  
+        }
+        
 
     }
 
     public function finishCharging() {
-        // close charge 
-        //then redirect to showChargingDetails function
+
+        $data = [
+            'status' => 'finishing',
+            'open' => 'close',
+            'id' => $_SESSION['charging_details']['id'],
+        ];
+        $success = update('status = ? , open = ?','charging_details',array_values($data),'id = ?');
+        if($success) {
+            $this->showChargingDetails();  
+        }
+        
 
     }
 
     public function cancelCharging() {
-        //cancel charge with validation pin and update details
-        //then redirect to showChargingDetails function
+
+        $data = [
+            'status' => 'canceling',
+            'power_up' => $_SESSION['charging_details']['power_up'],
+            'time_up' => $_SESSION['charging_details']['time_up'],
+            'id' => $_SESSION['charging_details']['id'],
+        ];
+        $success = update('status = ? , power_up = ? , time_up = ?','charging_details',array_values($data),'id = ?');
+        if($success) {
+            $this->showChargingDetails();  
+        }
+        
 
     }
 
     public static function loadingCharging() {
+        unset( $_SESSION['charging_details']['time_charging'], $_SESSION['charging_details']['time_up'],$_SESSION['charging_details']['power_up']);
         ChargingController::calculateRemainingTime();
         ChargingController::calculateCurrentPower();
         
+        if(strtotime('now') > strtotime($_SESSION['charging_details']['time_end']) && $_SESSION['charging_details']['status'] == 'wait-ending') {
+            $data = [
+                'status' => 'finishing',
+                'power_up' => ($_SESSION['charging_details']['charge_duration'] * 60 * $_SESSION['power'][$_SESSION['charging_details']['vehicle_type']]) + $_SESSION['charging_details']['power_init'],
+                'time_up' => date('H:s:i',strtotime('00:00:00')),
+                'id' => $_SESSION['charging_details']['id'],
+            ];
+            $success = update('status = ? , power_up = ? , time_up = ?','charging_details',array_values($data),'id = ?');
+
+            if($success) {
+                $where = "user_id = {$_SESSION['charging_details']['user_id']} And open ='open'";
+                $charging_details = selectOne('*','charging_details',$where);
+                unset( $_SESSION['charging_details']);
+                $_SESSION['charging_details'] = $charging_details;
+                header("location: finishing_details.php");
+            }
+        }
         //check if finish charge and update charge
 
     }

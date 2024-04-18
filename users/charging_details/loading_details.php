@@ -1,9 +1,10 @@
 <?php
 	ob_start();
     session_start();
-	$pageTitle = 'Charging Details';
-	include 'init.php';
+	  $pageTitle = 'Charging Details';
+	  include 'init.php';
     include $tmp.'header.php';
+    include_once('../../layout/functions/functions.php');
     include $cont.'ChargingController.php';
     ChargingController::loadingCharging();
     $vehicle_type = strtoupper($_SESSION['charging_details']['vehicle_type']); 

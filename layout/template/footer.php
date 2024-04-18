@@ -4,7 +4,7 @@
     <div class="container">
       <p>
         &copy; <span id="displayYear"></span> All Rights Reserved By
-        <a href="<?php echo $app?>index.php">EV Regharging Point</a>
+        <a href="<?php echo $app?>index.php">EV Recharging Point</a>
       </p>
     </div>
   </footer>
